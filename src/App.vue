@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { useBreadcrumbStore } from './stores/breadcrumbs'
+
+const crumbStore = useBreadcrumbStore()
 </script>
 
 <template>
@@ -9,6 +12,7 @@ import HelloWorld from './components/HelloWorld.vue'
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
+      <p>crumbs: {{ crumbStore.crumbs }}</p>
 
       <nav>
         <RouterLink to="/">Home</RouterLink>

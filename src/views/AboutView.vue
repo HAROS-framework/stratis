@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import { useBreadcrumbStore } from '@/stores/breadcrumbs'
+
+const crumbStore = useBreadcrumbStore()
+crumbStore.setBreadcrumbs(['about'])
+</script>
+
 <template>
   <div class="about">
     <h1>This is an about page</h1>
