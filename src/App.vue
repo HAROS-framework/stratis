@@ -1,9 +1,9 @@
+<!-- SPDX-License-Identifier: MIT -->
+<!-- Copyright © 2024 André Santos -->
+
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
-import { useBreadcrumbStore } from './stores/breadcrumbs'
-
-const crumbStore = useBreadcrumbStore()
 </script>
 
 <template>

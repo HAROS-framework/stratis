@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright © 2024 André Santos
+
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 

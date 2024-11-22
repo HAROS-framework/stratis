@@ -1,9 +1,8 @@
+<!-- SPDX-License-Identifier: MIT -->
+<!-- Copyright © 2024 André Santos -->
+
 <script setup lang="ts">
 import TheWelcome from '@/components/TheWelcome.vue'
-import { useBreadcrumbStore } from '@/stores/breadcrumbs'
-
-const crumbStore = useBreadcrumbStore()
-crumbStore.setBreadcrumbs(['home'])
 </script>
 
 <template>

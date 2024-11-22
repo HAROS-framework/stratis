@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright © 2024 André Santos
+
 import './assets/main.css'
 
 import { createApp } from 'vue'
