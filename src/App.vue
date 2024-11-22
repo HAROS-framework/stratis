@@ -12,9 +12,9 @@ import HelloWorld from './components/HelloWorld.vue'
 
     <nav class="app-nav">
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">Issues</RouterLink>
-      <RouterLink to="/about">Source</RouterLink>
-      <RouterLink to="/about">Runtime</RouterLink>
+      <RouterLink to="/issues">Issues</RouterLink>
+      <RouterLink to="/source">Source</RouterLink>
+      <RouterLink to="/runtime">Runtime</RouterLink>
     </nav>
   </header>
 
@@ -34,7 +34,6 @@ import HelloWorld from './components/HelloWorld.vue'
 
 .app-nav a.router-link-exact-active {
   color: var(--color-text);
-  font-weight: bold;
 }
 
 .app-nav a.router-link-exact-active:hover {
@@ -45,6 +44,7 @@ import HelloWorld from './components/HelloWorld.vue'
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  font-weight: bold;
 }
 
 .app-nav a:first-of-type {
