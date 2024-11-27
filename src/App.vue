@@ -17,14 +17,19 @@ import { RouterLink, RouterView } from 'vue-router'
     </nav>
   </header>
 
-  <RouterView />
+  <section class="app-view">
+    <RouterView />
+  </section>
 </template>
 
 <style>
 .app-header {
+  width: 100%;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: row;
   align-items: baseline;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .app-header > h1 {
@@ -35,11 +40,10 @@ import { RouterLink, RouterView } from 'vue-router'
 }
 
 .app-nav {
-  flex: 3;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
-  font-size: 1.25rem;
 }
 
 .app-nav a.router-link-exact-active {
@@ -63,6 +67,13 @@ import { RouterLink, RouterView } from 'vue-router'
   border: 0;
 }*/
 
+.app-view {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  overflow: auto;
+}
+
 @media (min-width: 1024px) {
   .app-header > h1 {
     font-size: 2.6rem;
@@ -70,6 +81,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
   .app-nav {
     gap: 2rem;
+    font-size: 1.25rem;
   }
 
   .app-nav a {
