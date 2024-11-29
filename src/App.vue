@@ -17,9 +17,9 @@ import { RouterLink, RouterView } from 'vue-router'
     </nav>
   </header>
 
-  <section class="app-view">
+  <div class="app-view">
     <RouterView />
-  </section>
+  </div>
 </template>
 
 <style>

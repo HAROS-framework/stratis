@@ -4,9 +4,9 @@
 <script setup lang="ts"></script>
 
 <template>
-  <section class="source">
+  <div class="source">
     <h1>This is the source page</h1>
-  </section>
+  </div>
 </template>
 
 <style></style>

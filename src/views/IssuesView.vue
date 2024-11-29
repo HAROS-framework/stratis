@@ -4,9 +4,9 @@
 <script setup lang="ts"></script>
 
 <template>
-  <section class="issues">
+  <div class="issues">
     <h1>This is the issues page</h1>
-  </section>
+  </div>
 </template>
 
 <style></style>

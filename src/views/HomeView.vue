@@ -3,13 +3,14 @@
 
 <script setup lang="ts">
 import ProjectSelector from '@/components/home/ProjectSelector.vue'
+import ProjectStats from '@/components/home/ProjectStats.vue'
 </script>
 
 <template>
   <div class="home-view">
     <div class="left-side">
       <ProjectSelector />
-      <div class="panel"></div>
+      <ProjectStats />
     </div>
 
     <div class="right-side">
@@ -31,6 +32,7 @@ import ProjectSelector from '@/components/home/ProjectSelector.vue'
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 .home-view > .left-side > .panel {

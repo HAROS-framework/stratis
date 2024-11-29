@@ -4,9 +4,9 @@
 <script setup lang="ts"></script>
 
 <template>
-  <section class="runtime">
+  <div class="runtime">
     <h1>This is the runtime page</h1>
-  </section>
+  </div>
 </template>
 
 <style></style>
