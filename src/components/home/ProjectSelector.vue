@@ -29,7 +29,6 @@
 
 .project-selector > .header > h2 {
   flex: 1;
-  color: var(--color-heading);
 }
 
 .project-selector > .header > button {

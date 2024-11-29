@@ -4,6 +4,16 @@
 <script setup lang="ts">
 import ProjectSelector from '@/components/home/ProjectSelector.vue'
 import ProjectStats from '@/components/home/ProjectStats.vue'
+import StatsChart from '@/components/home/StatsChart.vue'
+
+const alphabet = [
+  { key: 'A', value: 0.08167 },
+  { key: 'B', value: 0.01492 },
+  { key: 'C', value: 0.02782 },
+  { key: 'D', value: 0.04253 },
+  { key: 'E', value: 0.12702 },
+  { key: 'F', value: 0.02268 },
+]
 </script>
 
 <template>
@@ -14,7 +24,7 @@ import ProjectStats from '@/components/home/ProjectStats.vue'
     </div>
 
     <div class="right-side">
-      <div class="panel"></div>
+      <StatsChart :data="alphabet" />
     </div>
   </div>
 </template>
@@ -43,7 +53,8 @@ import ProjectStats from '@/components/home/ProjectStats.vue'
   height: 100%;
   flex: 2;
   display: flex;
-  padding-top: 0.25rem;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .home-view > .right-side > .panel {
