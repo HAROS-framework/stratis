@@ -24,6 +24,7 @@
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
   --vt-c-text-green: hsla(160, 100%, 37%, 1);
+  --vt-c-green-shadow: hsla(160, 100%, 37%, 0.2);
 }
 
 /* semantic color variables for this project */
@@ -39,6 +40,7 @@
   --color-text: var(--vt-c-text-light-1);
 
   --color-green: var(--vt-c-text-green);
+  --color-green-hover: var(--vt-c-green-shadow);
 
   --section-gap: 160px;
 }
