@@ -1,12 +1,47 @@
 <!-- SPDX-License-Identifier: MIT -->
 <!-- Copyright © 2024 André Santos -->
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ComputationGraph from '@/components/runtime/ComputationGraph.vue'
+</script>
 
 <template>
-  <div class="runtime">
-    <h1>This is the runtime page</h1>
+  <div class="runtime-view">
+    <div class="left-side">
+      <h2>Launch Files</h2>
+      <div class="panel"></div>
+    </div>
+
+    <div class="right-side">
+      <ComputationGraph />
+    </div>
   </div>
 </template>
 
-<style></style>
+<style>
+.runtime-view {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  gap: 1rem;
+}
+
+.runtime-view > .left-side {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.runtime-view > .left-side > .panel {
+  flex: 1;
+  background-color: aqua;
+}
+
+.runtime-view > .right-side {
+  height: 100%;
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+</style>
