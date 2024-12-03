@@ -3,6 +3,18 @@
 
 <script setup lang="ts">
 import ComputationGraph from '@/components/runtime/ComputationGraph.vue'
+
+enum FeatureIcon {
+  ICON_TRUE = '\u2713',
+  ICON_FALSE = '\u2716', // '\u00d7',
+  ICON_MAYBE = '',
+}
+
+enum FeatureType {
+  ROSLAUNCH,
+  ARGUMENT,
+  VALUE,
+}
 </script>
 
 <template>
