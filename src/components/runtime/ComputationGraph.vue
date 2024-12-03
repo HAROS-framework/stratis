@@ -112,7 +112,7 @@ const svgContainer = useTemplateRef('computationGraphContainer')
 const selectedNode = ref<NodeDataType | null>(null)
 const zoom = ref<number>(1.0)
 const svgWidth = ref<number>(320)
-const svgHeight = ref<number>(180)
+const svgHeight = ref<number>(100)
 const model = ref<CGDataType>(exampleCG())
 
 // Component Methods -----------------------------------------------------------
@@ -268,9 +268,7 @@ function buildModelElement(): SVGElement {
 
 function resetSvgElement(): void {
   if (svgContainer.value != null) {
-    const { width, height } = svgContainer.value.getBoundingClientRect()
-    svgWidth.value = width - 4
-    svgHeight.value = height - 4
+    updateSvgSize()
     const container = d3.select(svgContainer.value)
     container.selectAll('svg').remove()
     if (model.value != null) {
@@ -279,14 +277,24 @@ function resetSvgElement(): void {
   }
 }
 
+function updateSvgSize(): void {
+  const zoomFactor = 1.0 / zoom.value
+  if (svgContainer.value != null) {
+    const { width, height } = svgContainer.value.getBoundingClientRect()
+    svgWidth.value = (width - 4) * zoomFactor
+    svgHeight.value = (height - 4) * zoomFactor
+  } else {
+    svgWidth.value = 320 * zoomFactor
+    svgHeight.value = 180 * zoomFactor
+  }
+}
+
 // Setup -----------------------------------------------------------------------
 
 function onZoomChanged(newValue: number): void {
   if (svgContainer.value != null) {
     // Specify the dimensions of the graph
-    const zoomFactor = 1.0 / newValue
-    svgWidth.value = 320 * zoomFactor
-    svgHeight.value = 180 * zoomFactor
+    updateSvgSize()
     d3.select(svgContainer.value)
       .selectAll('svg')
       .attr('viewBox', [
