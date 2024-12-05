@@ -22,4 +22,19 @@ export interface FeatureModelDescription {
   launch: LaunchFeatureDescription[]
 }
 
+// Feature Model Instantiation -------------------------------------------------
+
+export interface FeatureInstance {
+  id: string
+  selected: boolean | null
+}
+
+export interface LaunchFeatureInstance extends FeatureInstance {
+  arguments: Record<string, ArgFeatureInstance>
+}
+
+export interface ArgFeatureInstance extends FeatureInstance {
+  value: string | null
+}
+
 // Computation Graph -----------------------------------------------------------

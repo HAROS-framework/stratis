@@ -5,22 +5,12 @@
 
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { FeatureModelDescription, LaunchFeatureDescription } from '@/types/runtime'
-
-// Internal Type Definitions ---------------------------------------------------
-
-export interface FeatureInstance {
-  id: string
-  selected: boolean | null
-}
-
-export interface LaunchFeatureInstance extends FeatureInstance {
-  arguments: Record<string, ArgFeatureInstance>
-}
-
-export interface ArgFeatureInstance extends FeatureInstance {
-  value: string | null
-}
+import type {
+  ArgFeatureInstance,
+  FeatureModelDescription,
+  LaunchFeatureDescription,
+  LaunchFeatureInstance,
+} from '@/types/runtime'
 
 // Store -----------------------------------------------------------------------
 
