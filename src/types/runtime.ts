@@ -3,21 +3,26 @@
 
 // Feature Model ---------------------------------------------------------------
 
+export type FeatureId = string
+
 export interface FeatureDescription {
-  id: string
+  id: FeatureId
   name: string
 }
 
 export interface LaunchFeatureDescription extends FeatureDescription {
-  arguments: ArgFeatureDescription[]
+  args: ArgFeatureDescription[]
 }
 
 export interface ArgFeatureDescription extends FeatureDescription {
-  defaultValue: string | null
-  values: string[]
+  defaultValue: string // empty means none
+  knownValues: string[]
 }
 
+export type FeatureModelId = string
+
 export interface FeatureModelDescription {
+  id: FeatureModelId
   name: string
   launch: LaunchFeatureDescription[]
 }
@@ -25,16 +30,18 @@ export interface FeatureModelDescription {
 // Feature Model Instantiation -------------------------------------------------
 
 export interface FeatureInstance {
-  id: string
+  // id: FeatureId
   selected: boolean | null
 }
 
 export interface LaunchFeatureInstance extends FeatureInstance {
-  arguments: Record<string, ArgFeatureInstance>
+  args: Record<FeatureId, string> // id: value (empty means unknown)
 }
 
-export interface ArgFeatureInstance extends FeatureInstance {
-  value: string | null
+export interface FeatureModelInstance {
+  id: FeatureModelId // of the corresponding description
+  name: string // of this particular instance
+  launch: Record<FeatureId, LaunchFeatureInstance>
 }
 
 // Computation Graph -----------------------------------------------------------

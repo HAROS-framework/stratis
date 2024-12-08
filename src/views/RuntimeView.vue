@@ -2,26 +2,14 @@
 <!-- Copyright © 2024 André Santos -->
 
 <script setup lang="ts">
+import FeatureModel from '@/components/feature_model/FeatureModel.vue'
 import ComputationGraph from '@/components/runtime/ComputationGraph.vue'
-
-enum FeatureIcon {
-  ICON_TRUE = '\u2713',
-  ICON_FALSE = '\u2716', // '\u00d7',
-  ICON_MAYBE = '',
-}
-
-enum FeatureType {
-  ROSLAUNCH,
-  ARGUMENT,
-  VALUE,
-}
 </script>
 
 <template>
   <div class="runtime-view">
     <div class="left-side">
-      <h2>Launch Files</h2>
-      <div class="panel"></div>
+      <FeatureModel />
     </div>
 
     <div class="right-side">
