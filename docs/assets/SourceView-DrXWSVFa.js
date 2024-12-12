@@ -1,0 +1,1 @@
+import{_ as s,o,c,a as r}from"./index-CA7bcTze.js";const t={},a={class:"source"};function n(_,e){return o(),c("div",a,e[0]||(e[0]=[r("h1",null,"This is the source page",-1)]))}const l=s(t,[["render",n]]);export{l as default};
