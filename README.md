@@ -45,6 +45,8 @@ Follow the instructions on your terminal. It should provide a `localhost` link t
 npm run build
 ```
 
+The output should be placed under a `dist` directory (newly created if it was not there previously).
+
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```sh
