@@ -37,6 +37,8 @@ npm install
 npm run dev
 ```
 
+Follow the instructions on your terminal. It should provide a `localhost` link to preview the web application.
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
