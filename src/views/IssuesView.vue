@@ -51,6 +51,16 @@ const selectedIssue = ref<number>(0)
 function onSelectIssue(i: number): void {
   selectedIssue.value = i
 }
+
+/*const vscode = window.acquireVsCodeApi != null ? window.acquireVsCodeApi() : null
+
+function openFile(filePath: string) {
+  if (vscode != null) {
+    selectedIssue.value = 3
+    console.log('vscode')
+    vscode.postMessage({ command: 'openFile', filePath })
+  }
+}*/
 </script>
 
 <template>
@@ -70,7 +80,12 @@ function onSelectIssue(i: number): void {
         {{ issues[selectedIssue] }}
       </h2>
       <p>A more detailed issue description will go here.</p>
-      <pre>src/path/to/file.cpp:42</pre>
+      <a
+        href="vscode://file/C:/Users/afariasa/Software/harosviz/src/views/RuntimeView.vue:9:1"
+        target="_blank"
+      >
+        <pre>src/path/to/file.cpp:42</pre>
+      </a>
     </div>
   </div>
 </template>
