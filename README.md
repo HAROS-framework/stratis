@@ -23,6 +23,11 @@ Clone the repository and `cd` into its root directory.
 ```sh
 git clone https://github.com/HAROS-framework/stratis.git
 cd stratis
+```
+
+Then, install missing dependencies.
+
+```sh
 npm install
 ```
 
