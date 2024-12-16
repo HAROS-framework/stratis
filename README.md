@@ -1,22 +1,28 @@
-# harosviz
+# Stratis
 
-This template should help get you started developing with Vue 3 in Vite.
+## Requirements
+
+Install [Node.js](https://nodejs.org/en) and ensure that the `npm` command is available to your command line, for example by running `npm --version`.
 
 ## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+[VSCode](https://code.visualstudio.com/) with the [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) extension.
 
-## Type Support for `.vue` Imports in TS
+## Languages and Frameworks
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+This project is built with:
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+- **Vue 3** (Composition API) to build composable and reusable UI components.
+- **TypeScript** for static type checking.
+- **Vite** for assembling the web page and have live previews during development.
 
 ## Project Setup
 
+Clone the repository and `cd` into its root directory.
+
 ```sh
+git clone https://github.com/HAROS-framework/stratis.git
+cd stratis
 npm install
 ```
 

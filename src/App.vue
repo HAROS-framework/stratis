@@ -7,7 +7,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <header class="app-header">
-    <h1>HAROSviz</h1>
+    <h1>Stratis</h1>
 
     <nav class="app-nav">
       <RouterLink to="/">Home</RouterLink>

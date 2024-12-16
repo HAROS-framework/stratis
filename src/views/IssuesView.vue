@@ -81,7 +81,7 @@ function openFile(filePath: string) {
       </h2>
       <p>A more detailed issue description will go here.</p>
       <a
-        href="vscode://file/C:/Users/afariasa/Software/harosviz/src/views/RuntimeView.vue:9:1"
+        href="vscode://file/C:/Users/afariasa/Software/stratis/src/views/RuntimeView.vue:9:1"
         target="_blank"
       >
         <pre>src/path/to/file.cpp:42</pre>
