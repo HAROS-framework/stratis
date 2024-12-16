@@ -14,7 +14,7 @@ This project is built with:
 
 ## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) with the [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) extension.
+[VSCode](https://code.visualstudio.com/) with the [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar), **ESLint** and **Prettier** extensions.
 
 ## Project Setup
 
