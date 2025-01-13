@@ -1,12 +1,14 @@
+import { every } from "d3";
+
 type FileNode = {
   name: string;
-  type: 'file' | 'directory';
+  type: 'file' | 'directory' | 'project' | 'workflow' | 'package';
   children?: FileNode[];
 };
 
 const fileTree: FileNode = {
   name: "turtlebot3_simulations",
-  type: "directory",
+  type: "project",
   children: [
     {
       name: ".github",
@@ -17,7 +19,7 @@ const fileTree: FileNode = {
           type: "directory",
           children: [
             {
-              name: "ci.yml",
+              name: "ros-ci.yml",
               type: "file"
             }
           ]
@@ -26,14 +28,52 @@ const fileTree: FileNode = {
     },
     {
       name: "turtlebot3_fake_node",
-      type: "directory",
+      type: "package",
       children: [
+        {
+          name: "include",
+          type: "directory",
+          children: [
+            {
+              name: "turtlebot3_fake_node",
+              type: "directory",
+              children: [
+                {
+                  name: "turtlebot3_fake_node.hpp",
+                  type: "file"
+                }
+              ]
+            }
+          ]
+        },
         {
           name: "launch",
           type: "directory",
           children: [
             {
-              name: "turtlebot3_fake.launch.py",
+              name: "rviz2.launch.py",
+              type: "file"
+            },
+            {
+              name: "turtlebot3_fake_node.launch.py",
+              type: "file"
+            }
+          ]
+        },
+        {
+          name: "param",
+          type: "directory",
+          children: [
+            {
+              name: "burger.yaml",
+              type: "file"
+            },
+            {
+              name: "waffle.yaml",
+              type: "file"
+            },
+            {
+              name: "waffle_pi.yaml",
               type: "file"
             }
           ]
@@ -49,6 +89,10 @@ const fileTree: FileNode = {
           ]
         },
         {
+          name: "CHANGELOG.rst",
+          type: "file"
+        },
+        {
           name: "CMakeLists.txt",
           type: "file"
         },
@@ -60,14 +104,58 @@ const fileTree: FileNode = {
     },
     {
       name: "turtlebot3_gazebo",
-      type: "directory",
+      type: "package",
       children: [
+        {
+          name: "include",
+          type: "directory",
+          children: [
+            {
+              name: "turtlebot3_gazebo",
+              type: "directory",
+              children: [
+                {
+                  name: "turtlebot3_drive.hpp",
+                  type: "file"
+                }
+              ]
+            }
+          ]
+        },
         {
           name: "launch",
           type: "directory",
           children: [
             {
-              name: "turtlebot3_empty_world.launch.py",
+              name: "empty_world.launch.py",
+              type: "file"
+            },
+            {
+              name: "robot_state_publisher.launch.py",
+              type: "file"
+            },
+            {
+              name: "spawn_turtlebot3.launch.py",
+              type: "file"
+            },
+            {
+              name: "turtlebot3_dqn_stage1.launch.py",
+              type: "file"
+            },
+            {
+              name: "turtlebot3_dqn_stage2.launch.py",
+              type: "file"
+            },
+            {
+              name: "turtlebot3_dqn_stage3.launch.py",
+              type: "file"
+            },
+            {
+              name: "turtlebot3_dqn_stage4.launch.py",
+              type: "file"
+            },
+            {
+              name: "turtlebot3_house.launch.py",
               type: "file"
             },
             {
@@ -77,13 +165,17 @@ const fileTree: FileNode = {
           ]
         },
         {
-          name: "models",
+          name: "models",                  // TODO: finish building out this directory
           type: "directory",
           children: [
             {
-              name: "turtlebot3",
+              name: "turtlebot3_burger",
               type: "directory",
               children: [
+                {
+                  name: "model-1_4.sdf",
+                  type: "file"
+                },
                 {
                   name: "model.config",
                   type: "file"
@@ -97,18 +189,70 @@ const fileTree: FileNode = {
           ]
         },
         {
-          name: "worlds",
+          name: "rviz",
           type: "directory",
           children: [
             {
-              name: "empty.world",
-              type: "file"
-            },
-            {
-              name: "turtlebot3_world.world",
+              name: "tb3_gazebo.rviz",
               type: "file"
             }
           ]
+        },
+        {
+          name: "src",
+          type: "directory",
+          children: [
+            {
+              name: "turtlebot3_drive.cpp",
+              type: "file"
+            }
+          ]
+        },
+        {
+          name: "urdf",                 // TODO: finish building out this directory
+          type: "directory",
+          children: [
+            {
+              name: "common_properties.urdf",
+              type: "file"
+            }
+          ]
+        },
+        {
+          name: "worlds",               // TODO: finish building out this directory
+          type: "directory",
+          children: [
+            {
+              name: "empty_world.world",
+              type: "file"
+            },
+            {
+              name: "turtlebot3_dqn_stage1.world",
+              type: "file"
+            }
+          ]
+        },
+        {
+          name: "CHANGELOG.rst",
+          type: "file"
+        },
+        {
+          name: "CMakeLists.txt",
+          type: "file"
+        },
+        {
+          name: "package.xml",
+          type: "file"
+        }
+      ]
+    },
+    {
+      name: "turtlebot3_simulations",
+      type: "package",
+      children: [
+        {
+          name: "CHANGELOG.rst",
+          type: "file"
         },
         {
           name: "CMakeLists.txt",
@@ -140,3 +284,20 @@ const fileTree: FileNode = {
 };
 
 export default fileTree;
+
+export function getProjectName(node: FileNode): string | undefined {
+  if (node.type === 'project') {
+    return node.name;
+  }
+}
+
+export function getDirectoryNames(node: FileNode): Array<string> {
+  const directoryList = [];
+
+  for (const child of node.children) {
+    if (child.type == 'directory') {
+      directoryList.push(child.name);
+    }
+  }
+  return directoryList;
+}

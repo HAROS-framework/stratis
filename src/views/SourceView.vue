@@ -6,8 +6,12 @@
 import { ref } from 'vue'
 const name = ref<string>('ROS2 Workspace')
 
-import fileTree from './testData';
+import fileTree, { getDirectoryNames, getProjectName } from './testData';
 console.log(fileTree);
+
+const projectName = getProjectName(fileTree);
+const directoryNames = getDirectoryNames(fileTree);
+
 </script>
 
 // html -- content ------------------------------------------------------------
@@ -26,6 +30,8 @@ console.log(fileTree);
     <!-- Main Content -->
     <main class="main-content">
       <h1>{{ name }}</h1>
+      <p>Project Name: {{ projectName }}</p>
+      <p>Directory names are: {{ directoryNames }}</p>
 
     </main>
   </div>
