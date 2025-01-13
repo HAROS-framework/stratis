@@ -291,13 +291,16 @@ export function getProjectName(node: FileNode): string | undefined {
   }
 }
 
-export function getDirectoryNames(node: FileNode): Array<string> {
+export function getPackageName(node: FileNode): Array<string> {
   const directoryList = [];
-
-  for (const child of node.children) {
-    if (child.type == 'directory') {
-      directoryList.push(child.name);
+  if (node.children) {
+    for (const each of node.children) {
+      if (each.type === 'package') {
+        directoryList.push(each.name);
+      }
     }
   }
   return directoryList;
 }
+
+

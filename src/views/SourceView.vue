@@ -6,11 +6,11 @@
 import { ref } from 'vue'
 const name = ref<string>('ROS2 Workspace')
 
-import fileTree, { getDirectoryNames, getProjectName } from './testData';
+import fileTree, { getPackageName, getProjectName } from './testData';
 console.log(fileTree);
 
 const projectName = getProjectName(fileTree);
-const directoryNames = getDirectoryNames(fileTree);
+const packageNames = getPackageName(fileTree);
 
 </script>
 
@@ -30,8 +30,16 @@ const directoryNames = getDirectoryNames(fileTree);
     <!-- Main Content -->
     <main class="main-content">
       <h1>{{ name }}</h1>
-      <p>Project Name: {{ projectName }}</p>
-      <p>Directory names are: {{ directoryNames }}</p>
+      <div class="a">Project Name: {{ projectName }}</div>
+
+      <div class="b">
+        <p>The available packages are:</p>
+        <ul>
+          <li v-for="(packageName, index) in packageNames" :key="index">
+            {{ packageName }}
+          </li>
+        </ul>
+      </div>
 
     </main>
   </div>
@@ -40,6 +48,17 @@ const directoryNames = getDirectoryNames(fileTree);
 // css -- design ------------------------------------------------------------
 <style scoped>
 
+h1 {
+  font-weight: bold;
+  font-size: 30pt;
+  color: #2b5c8e;
+}
+
+div.a {
+  font-weight: bold;
+  font-size: 24px;
+  color: #27496c;
+}
 .app-container {
   display: flex;
   height: 100vh;
