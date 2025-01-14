@@ -41,6 +41,15 @@ const packageNames = getPackageName(fileTree);
         </ul>
       </div>
 
+      <div>
+        <p>Click the project to show the file system.</p>
+        <button type="button" class="collapsible">Click me!</button>
+        <div class="content">
+          <p>This is a test.</p>
+        </div>
+      </div>
+
+
     </main>
   </div>
 </template>
@@ -59,6 +68,30 @@ div.a {
   font-size: 24px;
   color: #27496c;
 }
+
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+
 .app-container {
   display: flex;
   height: 100vh;
