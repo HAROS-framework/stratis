@@ -4,14 +4,15 @@
 // js -- logic ------------------------------------------------------------
 <script setup lang="ts">
 import { ref } from 'vue'
-const name = ref<string>('ROS2 Workspace')
-
-import fileTree, { getPackageName, getProjectName } from './testData';
+import Tree from 'primevue/tree';
+import Button from 'primevue/button';
+import fileTree, { getPackageName, getProjectName, generateTreeNodes } from './testData';
 console.log(fileTree);
 
+const name = ref<string>('ROS2 Workspace')
 const projectName = getProjectName(fileTree);
 const packageNames = getPackageName(fileTree);
-
+const treeNodeName = [generateTreeNodes(fileTree)];
 </script>
 
 // html -- content ------------------------------------------------------------
@@ -43,12 +44,10 @@ const packageNames = getPackageName(fileTree);
 
       <div>
         <p>Click the project to show the file system.</p>
-        <button type="button" class="collapsible">Click me!</button>
-        <div class="content">
-          <p>This is a test.</p>
-        </div>
+        <Button label="Submit" />
       </div>
 
+      <Tree :value="treeNodeName" class="w-full md:w-[30rem]"></Tree>
 
     </main>
   </div>

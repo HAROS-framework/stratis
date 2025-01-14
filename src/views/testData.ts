@@ -1,8 +1,9 @@
-import { every } from "d3";
+import type { TreeNode } from 'primevue/treenode';
+
 
 type FileNode = {
   name: string;
-  type: 'file' | 'directory' | 'project' | 'workflow' | 'package';
+  type: 'file' | 'directory' | 'project' | 'package';
   children?: FileNode[];
 };
 
@@ -289,6 +290,28 @@ export function getProjectName(node: FileNode): string | undefined {
   if (node.type === 'project') {
     return node.name;
   }
+}
+
+export function generateTreeNodes(node: FileNode): TreeNode {
+
+  const treeNode: TreeNode = {
+    key: node.name,
+    label: node.name,
+    data: node.name,
+    children: []
+  }
+
+  if (node.type === "file") {
+    return treeNode;
+  }
+
+  if (node.children) {
+    for (let i=0; i<node.children.length; i++) {
+      treeNode.children?.push(generateTreeNodes(node.children[i]));
+    }
+  }
+
+  return treeNode;
 }
 
 export function getPackageName(node: FileNode): Array<string> {
