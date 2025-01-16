@@ -1,0 +1,142 @@
+{
+  "project-name": "case-study-ros2",
+  "file-path": "/home/etc/etc",
+  "workspace": "ros2_ws",
+  "environment-variables": {
+    "source-path": "",
+    "ROS_VERSION": "2",
+    "ROS_PYTHON_VERSION": "3",
+    "ROS_DISTRO": "jazzy",
+    "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+    "ROS_DOMAIN_ID": "42",
+    "ROS_LOG_DIR": "/mock/logs",
+    "ROS_LOG_LEVEL": "DEBUG",
+    "ROS_LOCALHOST_ONLY": "1",
+    "SIM_TIME": "1",
+    "FASTRTPS_DEFAULT_PROFILES_FILE": "/mock/config/fastdds_profiles.xml",
+    "DDS_QUEUE_SIZE": "20",
+    "ROS_SECURITY_ENABLE": "0"
+  },
+  "qos-variables": {
+    "history": {
+      "type": "enum",
+      "values": ["KeepLast", "KeepAll"],
+      "default": "KeepLast"
+    },
+    "depth": {
+      "type": "enum",
+      "values": [],
+      "default": "5"
+    },
+    "reliability": {
+      "type": "int",
+      "values": ["Reliable", "BestEffort"],
+      "default": "Reliable"
+    },
+    "durability": {
+      "type": "enum",
+      "values": ["TransientLocal", "Volatile"],
+      "default": "Volatile"
+    },
+    "deadline": {
+      "type": "float",
+      "values": [],
+      "default": "0.0"
+    },
+    "lifespan": {
+      "type": "float",
+      "values": [],
+      "default": "0.0"
+    },
+    "liveliness": {
+      "type": "enum",
+      "values": ["Automatic", "ManualByTopic"],
+      "default": "Automatic"
+    },
+    "duration": {
+      "type": "float",
+      "values": [],
+      "default": "0.0"
+    }
+  },
+  "files": [
+    {
+      "name": "localization.launch.py",
+      "type": ".launch.py",
+      "contents": {
+        "nodes": [
+          {
+            "node-name": "map_server",
+            "package": "nav2_map_server",
+            "namespace": "",
+            "parameters": [
+              {
+                "name": "use_sim_time",
+                "value": "True"
+              },
+              {
+                "name": "yaml_filename",
+                "value": "neobotix_area.yaml"
+              }
+            ],
+            "arguments": [],
+            "connections": [
+              {
+                "type": "publishes-to",
+                "topic": "/map",
+                "message": "nav_msgs/msg/OccupancyGrid",
+                "message-doc": "https://docs.ros.org/en/lunar/api/nav_msgs/html/msg/OccupancyGrid.html",
+                "message-fields": [
+                  {
+                    "type": "TODO: if we get to message fields",
+                    "value": "TODO: if we get message fields"
+                  }
+                ],
+                "qos": {
+                  "history": "default",
+                  "depth": "default",
+                  "reliability": "default",
+                  "durability": "default",
+                  "deadline": "default",
+                  "lifespan": "default",
+                  "liveliness": "default",
+                  "duration": "default"
+                }
+              },
+              {
+                "type": "subscribes-to",
+                "topic": "/dynamic_map",
+                "message-name": "nav_msgs/msg/OccupancyGrid",
+                "message-doc": "https://docs.ros.org/en/lunar/api/nav_msgs/html/msg/OccupancyGrid.html",
+                "message-fields": [
+                  {
+                    "type": "TODO: if we get to message fields",
+                    "value": "TODO: if we get message fields"
+                  }
+                ],
+                "qos": {
+                  "history": "default",
+                  "depth": "default",
+                  "reliability": "default",
+                  "durability": "default",
+                  "deadline": "default",
+                  "lifespan": "default",
+                  "liveliness": "default",
+                  "duration": "default"
+                }
+              },
+              {
+                "type": "calls-service",
+                "etc": "etc"
+              },
+              {
+                "type": "provides-service",
+                "etc": "etc"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
