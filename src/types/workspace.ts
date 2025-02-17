@@ -8,17 +8,38 @@ export type WorkspaceId = string
 export interface Workspace {
   id: WorkspaceId
   name: string
+  packages: PackageSummary[]
   components: ComponentSummary[]
   launch: LaunchFileSummary[]
   issues: IssueSummary[]
+}
+
+// Packages --------------------------------------------------------------------
+
+export type PackageId = string
+
+export interface PackageSummary {
+  id: PackageId
+  name: string
+}
+
+export interface PackageDetails {
+  id: PackageId
 }
 
 // Components ------------------------------------------------------------------
 
 export type ComponentId = string
 
+export enum ComponentType {
+  NODE,
+  PLUGIN,
+}
+
 export interface ComponentSummary {
   id: ComponentId
+  type: ComponentType
+  name: string
 }
 
 export interface ComponentDetails {
