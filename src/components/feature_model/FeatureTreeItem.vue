@@ -51,10 +51,10 @@ function toggle() {
 <template>
   <li class="item">
     <div class="emph" :class="{ bold: hasChildren }">
-      <span v-if="hasChildren" @click.stop="toggle">
+      <code v-if="hasChildren" @click.stop="toggle">
         <!-- @dblclick="changeType" -->
         [{{ collapsed ? '+' : '-' }}]
-      </span>
+      </code>
       <span @click.stop="emit('select')">{{ name }}</span>
       &nbsp;
       <span>{{ selectionStatusLabel }}</span>
