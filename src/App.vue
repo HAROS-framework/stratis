@@ -10,9 +10,9 @@ import { RouterLink, RouterView } from 'vue-router'
     <h1>Stratis</h1>
 
     <nav class="app-nav">
-      <RouterLink to="/">Home</RouterLink>
+      <RouterLink to="/">Workspace</RouterLink>
+      <RouterLink to="/home">Home</RouterLink>
       <RouterLink to="/issues">Issues</RouterLink>
-      <RouterLink to="/source">Source</RouterLink>
       <RouterLink to="/runtime">Runtime</RouterLink>
     </nav>
   </header>

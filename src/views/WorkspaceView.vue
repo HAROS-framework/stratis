@@ -4,8 +4,8 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="source">
-    <h1>This is the source page</h1>
+  <div class="workspace-view">
+    <h1>This is the workspace view</h1>
   </div>
 </template>
 
