@@ -68,6 +68,7 @@ function openFile(filePath: string) {
     <ul class="left-side panel">
       <li
         v-for="(issue, i) in issues"
+        :key="i"
         :class="{ active: selectedIssue == i }"
         @click="onSelectIssue(i)"
       >
