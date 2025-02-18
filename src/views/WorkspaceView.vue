@@ -3,33 +3,54 @@
 
 <script setup lang="ts">
 import PackageList from '@/components/workspace/PackageList.vue'
-import type { PackageDetails, PackageSummary } from '@/types/workspace'
-import { ref } from 'vue'
+import {
+  ComponentType,
+  type PackageDetails,
+  type PackageId,
+  type PackageSummary,
+} from '@/types/workspace'
+import { computed, ref } from 'vue'
 
 // Constants -------------------------------------------------------------------
 
-const packageData: PackageSummary[] = [
-  {
+const dummyPackageData: Record<PackageId, PackageDetails> = {
+  '001': {
     id: '001',
-    name: 'turtlebot_navigation',
+    name: 'turtlebot3_bringup',
+    launch: [
+      { id: '001', name: 'robot.launch.py' },
+      { id: '002', name: 'rviz2.launch.py' },
+      { id: '003', name: 'turtlebot3_state_publisher.launch.py' },
+    ],
+    components: [],
   },
-  {
+  '002': {
     id: '002',
-    name: 'turtlebot_safety_controller',
+    name: 'turtlebot3_navigation2',
+    launch: [{ id: '004', name: 'navigation2.launch.py' }],
+    components: [],
   },
-  {
+  '003': {
     id: '003',
-    name: 'turtlebot_multiplexer',
+    name: 'turtlebot3_node',
+    launch: [],
+    components: [{ id: '001', type: ComponentType.NODE, name: 'turtlebot3_ros' }],
   },
-  {
-    id: '004',
-    name: 'turtlebot_joystick_controller',
-  },
-  {
-    id: '005',
-    name: 'turtlebot_hardware_interface',
-  },
-]
+}
+
+const packageSummaries = computed<PackageSummary[]>(() => {
+  return Object.values(dummyPackageData).map(_extractPackageSummary).sort(_sortByName)
+})
+
+function _extractPackageSummary(pkg: PackageDetails): PackageSummary {
+  return { id: pkg.id, name: pkg.name }
+}
+
+function _sortByName(a: { name: string }, b: { name: string }): number {
+  if (a.name > b.name) return 1
+  if (a.name < b.name) return -1
+  return 0
+}
 
 // Component State -------------------------------------------------------------
 
@@ -38,8 +59,8 @@ const packageDetails = ref<PackageDetails | null>(null)
 // Event Handlers --------------------------------------------------------------
 
 function onPackageSelected(i: number): void {
-  const pkg = packageData[i]
-  packageDetails.value = { id: pkg.id }
+  const pkg = packageSummaries.value[i]
+  packageDetails.value = dummyPackageData[pkg.id]
 }
 </script>
 
@@ -47,14 +68,33 @@ function onPackageSelected(i: number): void {
   <div class="workspace-view">
     <div class="left-side">
       <h1>Workspace</h1>
-      <PackageList :package-data="packageData" @select="onPackageSelected" />
+      <PackageList :package-data="packageSummaries" @select="onPackageSelected" />
     </div>
 
     <div class="right-side">
       <h1>Placeholder</h1>
-      <p v-if="packageDetails != null">
-        You have selected the package with <code>id: {{ packageDetails.id }}</code>
-      </p>
+      <div v-if="packageDetails != null" class="panel">
+        <p>
+          You have selected the package with <code>id: {{ packageDetails.id }}</code
+          >.
+        </p>
+
+        <h2>Launch Files</h2>
+        <ul v-if="packageDetails.launch.length > 0">
+          <li v-for="item in packageDetails.launch" :key="item.id">
+            {{ item.name }}
+          </li>
+        </ul>
+        <p v-else>There are no launch files.</p>
+
+        <h2>Components</h2>
+        <ul v-if="packageDetails.components.length > 0">
+          <li v-for="item in packageDetails.components" :key="item.id">
+            {{ item.name }} ({{ item.type === ComponentType.NODE ? 'node' : 'other' }})
+          </li>
+        </ul>
+        <p v-else>There are no declared components.</p>
+      </div>
     </div>
   </div>
 </template>

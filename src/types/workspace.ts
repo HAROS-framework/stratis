@@ -23,8 +23,9 @@ export interface PackageSummary {
   name: string
 }
 
-export interface PackageDetails {
-  id: PackageId
+export interface PackageDetails extends PackageSummary {
+  launch: LaunchFileSummary[]
+  components: ComponentSummary[]
 }
 
 // Components ------------------------------------------------------------------
@@ -52,6 +53,7 @@ export type LaunchFileId = string
 
 export interface LaunchFileSummary {
   id: LaunchFileId
+  name: string
 }
 
 export interface LaunchFileDetails {
