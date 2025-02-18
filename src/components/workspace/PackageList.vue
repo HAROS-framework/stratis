@@ -9,28 +9,11 @@ import { ref } from 'vue'
 
 // Constants -------------------------------------------------------------------
 
-const packageData: PackageSummary[] = [
-  {
-    id: '001',
-    name: 'turtlebot_navigation',
-  },
-  {
-    id: '002',
-    name: 'turtlebot_safety_controller',
-  },
-  {
-    id: '003',
-    name: 'turtlebot_multiplexer',
-  },
-  {
-    id: '004',
-    name: 'turtlebot_joystick_controller',
-  },
-  {
-    id: '005',
-    name: 'turtlebot_hardware_interface',
-  },
-]
+defineProps<{ packageData: PackageSummary[] }>()
+
+const emit = defineEmits<{
+  (e: 'select', i: number): void
+}>()
 
 // Component State -------------------------------------------------------------
 
@@ -40,6 +23,7 @@ const selectedIssue = ref<number>(0)
 
 function onSelectIssue(i: number): void {
   selectedIssue.value = i
+  emit('select', i)
 }
 </script>
 
