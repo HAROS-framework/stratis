@@ -4,12 +4,14 @@
 <script setup lang="ts">
 // Imports ---------------------------------------------------------------------
 
-import type { PackageSummary } from '@/types/workspace'
-import { ref } from 'vue'
+import { computed } from 'vue'
+
+import type { PackageDetails } from '@/types/workspace'
+import SelectableList from '../SelectableList.vue'
 
 // Constants -------------------------------------------------------------------
 
-defineProps<{ packageData: PackageSummary[] }>()
+const props = defineProps<{ packageData: PackageDetails[] }>()
 
 const emit = defineEmits<{
   (e: 'select', i: number): void
@@ -17,58 +19,23 @@ const emit = defineEmits<{
 
 // Component State -------------------------------------------------------------
 
-const selectedIssue = ref<number>(0)
+const packageNames = computed<string[]>(() => {
+  const names: string[] = []
+  for (const pkg of props.packageData) {
+    names.push(pkg.name)
+  }
+  return names
+})
 
 // Component Methods -----------------------------------------------------------
 
-function onSelectIssue(i: number): void {
-  selectedIssue.value = i
+function onSelectPackage(i: number): void {
   emit('select', i)
 }
 </script>
 
 <template>
-  <ul class="package-list">
-    <li
-      v-for="(pkg, i) in packageData"
-      :key="i"
-      :class="{ active: selectedIssue == i }"
-      @click="onSelectIssue(i)"
-    >
-      {{ pkg.name }}
-    </li>
-  </ul>
+  <SelectableList :items="packageNames" @select="onSelectPackage" />
 </template>
 
-<style>
-.package-list {
-  height: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  list-style: none;
-  padding: 0;
-  background-color: var(--color-background-mute);
-}
-
-.package-list > li {
-  cursor: pointer;
-  padding: 0 0.5rem;
-}
-
-.package-list > li:hover {
-  background-color: var(--color-green-hover);
-  color: var(--color-green);
-}
-
-.package-list > li.active {
-  background-color: var(--color-border);
-  color: var(--color-heading);
-}
-
-.package-list > li.active:hover {
-  background-color: var(--color-green-hover);
-  color: var(--color-heading);
-}
-</style>
+<style></style>
