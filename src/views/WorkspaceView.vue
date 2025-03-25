@@ -77,7 +77,9 @@ function _sortByName(a: { name: string }, b: { name: string }): number {
         <h2>Launch Files</h2>
         <ul v-if="selectedPackage.launch.length > 0">
           <li v-for="item in selectedPackage.launch" :key="item.id">
-            {{ item.name }}
+            <RouterLink :to="`/launch/${item.id}`">
+              {{ item.name }}
+            </RouterLink>
           </li>
         </ul>
         <p v-else>There are no launch files.</p>

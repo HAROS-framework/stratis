@@ -25,6 +25,9 @@
 
   --vt-c-text-green: hsla(160, 100%, 37%, 1);
   --vt-c-green-shadow: hsla(160, 100%, 37%, 0.2);
+
+  --vt-c-text-orange: hsla(50, 88%, 55%, 1);
+  --vt-c-orange-shadow: hsla(50, 88%, 55%, 0.35);
 }
 
 /* semantic color variables for this project */
@@ -41,6 +44,9 @@
 
   --color-green: var(--vt-c-text-green);
   --color-green-hover: var(--vt-c-green-shadow);
+
+  --color-orange: var(--vt-c-text-orange);
+  --color-orange-hover: var(--vt-c-orange-shadow);
 
   --section-gap: 160px;
 }

@@ -29,16 +29,24 @@ a,
 
 h1 {
   font-size: 2rem;
+  font-variant-caps: small-caps;
   color: var(--color-heading);
 }
 
 h2 {
   font-size: 1.5rem;
+  font-variant-caps: small-caps;
   color: var(--color-heading);
 }
 
 h3 {
   font-size: 1.25rem;
+  font-variant-caps: all-small-caps;
+  color: var(--color-heading);
+}
+
+h4 {
+  font-variant-caps: all-small-caps;
   color: var(--color-heading);
 }
 

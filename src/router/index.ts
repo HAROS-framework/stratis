@@ -16,6 +16,14 @@ const router = createRouter({
       component: WorkspaceView,
     },
     {
+      path: '/launch/:id',
+      name: 'launch',
+      // route level code-splitting
+      // this generates a separate chunk (Source.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/LaunchView.vue'),
+    },
+    {
       path: '/home',
       name: 'home',
       // route level code-splitting

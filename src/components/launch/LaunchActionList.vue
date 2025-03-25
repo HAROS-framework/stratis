@@ -1,0 +1,101 @@
+<!-- SPDX-License-Identifier: MIT -->
+<!-- Copyright © 2025 André Santos -->
+
+<script setup lang="ts">
+// Imports ---------------------------------------------------------------------
+
+import { computed, ref } from 'vue'
+
+import type { LaunchAction, LaunchActionId } from '@/types/launch'
+
+// Constants -------------------------------------------------------------------
+
+const props = defineProps<{ actions: LaunchAction[] }>()
+
+// Component State -------------------------------------------------------------
+
+const selectedAction = ref<LaunchActionId>('')
+const currentDependencies = computed<Set<LaunchActionId>>(getDependencies)
+
+// Event Handlers --------------------------------------------------------------
+// Helper Functions ------------------------------------------------------------
+
+function getDependencies(): Set<LaunchActionId> {
+  const id = selectedAction.value
+  if (id !== '') {
+    for (const action of props.actions) {
+      if (action.id === id) {
+        return new Set(action.dependencies)
+      }
+    }
+  }
+  return new Set([])
+}
+
+function onSelectAction(action: LaunchAction): void {
+  selectedAction.value = action.id
+}
+</script>
+
+<template>
+  <ul class="launch-action-list">
+    <li
+      v-for="action in actions"
+      :key="action.id"
+      :class="{
+        selected: action.id === selectedAction,
+        dependency: currentDependencies.has(action.id),
+      }"
+      @click="onSelectAction(action)"
+    >
+      <span class="tag">{{ action.type }}</span>
+      {{ action.name }}
+    </li>
+  </ul>
+</template>
+
+<style>
+.launch-action-list {
+  flex: 1;
+  margin-left: 0.5rem;
+  padding: 0 1.5rem;
+  list-style-type: '» ';
+  border-left: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  font-family: monospace;
+  overflow: auto;
+  white-space: nowrap;
+  line-height: 1.25;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.5rem 0.5rem;
+}
+
+.launch-action-list > li {
+  cursor: pointer;
+}
+
+.launch-action-list > li.selected,
+.launch-action-list > li.selected:hover {
+  background-color: var(--color-green-hover);
+  color: var(--color-heading);
+}
+
+.launch-action-list > li.dependency {
+  color: var(--color-orange);
+}
+
+.launch-action-list > li:hover {
+  background-color: var(--color-background-mute);
+  color: var(--color-heading);
+}
+
+.launch-action-list > li > .tag {
+  border-radius: 0.25em;
+  border: 1px solid var(--color-text);
+  font-variant-caps: all-small-caps;
+  font-size: 1rem;
+  padding: 0 0.25em;
+}
+</style>

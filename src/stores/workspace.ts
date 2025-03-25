@@ -12,6 +12,7 @@ import type { Workspace } from '@/types/workspace'
 const defaultWorkspace: Workspace = {
   id: '',
   name: 'workspace',
+  packages: [],
   components: [],
   launch: [],
   issues: [],

@@ -34,7 +34,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 .app-header > h1 {
   font-weight: 500;
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--color-green);
   flex: 1;
 }
@@ -58,9 +58,10 @@ import { RouterLink, RouterView } from 'vue-router'
 
 .app-nav a {
   display: inline-block;
-  padding: 0 0.5rem;
+  padding: 0 0.25rem;
   border: 1px solid var(--color-border);
   border-radius: 0.25rem;
+  font-variant-caps: all-small-caps;
 }
 
 /*.app-nav a:first-of-type {
@@ -76,16 +77,15 @@ import { RouterLink, RouterView } from 'vue-router'
 
 @media (min-width: 1024px) {
   .app-header > h1 {
-    font-size: 2.6rem;
+    font-size: 2rem;
   }
 
   .app-nav {
-    gap: 2rem;
-    font-size: 1.25rem;
+    gap: 1rem;
   }
 
   .app-nav a {
-    padding: 0 1rem;
+    padding: 0 0.5rem;
   }
 }
 </style>
