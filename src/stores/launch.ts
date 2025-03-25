@@ -16,9 +16,16 @@ const data: Record<LaunchId, LaunchFile> = {
     name: 'robot.launch.py',
     actions: [
       { id: 'a001', type: LaunchActionType.ARG, name: 'use_sim_time', dependencies: [] },
-      { id: 'a002', type: LaunchActionType.NODE, name: '/nav2_container', dependencies: ['a001'] },
+      { id: 'a002', type: LaunchActionType.ARG, name: 'simple_arg', dependencies: [] },
+      { id: 'a003', type: LaunchActionType.ARG, name: 'dependent_arg', dependencies: ['a002'] },
       {
-        id: 'a003',
+        id: 'a004',
+        type: LaunchActionType.NODE,
+        name: '/nav2_container',
+        dependencies: ['a001', 'a003'],
+      },
+      {
+        id: 'a005',
         type: LaunchActionType.INCLUDE,
         name: 'nav2_bringup/launch/bringup_launch.py',
         dependencies: ['a001'],

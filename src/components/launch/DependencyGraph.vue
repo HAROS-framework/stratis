@@ -10,10 +10,11 @@ import { onMounted, ref, useTemplateRef, watch } from 'vue'
 
 // Constants -------------------------------------------------------------------
 
-const props = defineProps<{ data: NodeLinkGraph }>()
+const props = defineProps<{ model: NodeLinkGraph }>()
 
 export interface GraphNodeDatum extends SimulationNodeDatum {
   id: string
+  name?: string
   group: string
   condition: string
 }
@@ -36,7 +37,6 @@ const selectedNode = ref<GraphNodeDatum | null>(null)
 const zoom = ref<number>(1.0)
 const svgWidth = ref<number>(320)
 const svgHeight = ref<number>(100)
-const model = ref<NodeLinkGraph>(props.data)
 
 // Component Methods -----------------------------------------------------------
 
@@ -62,8 +62,8 @@ function buildModelElement(): SVGElement {
 
   // The force simulation mutates links and nodes, so create a copy
   // so that re-evaluating this cell produces the same result.
-  const links = model.value.links.map((d) => ({ ...d }))
-  const nodes = model.value.nodes.map((d) => ({ ...d }))
+  const links = props.model.links.map((d) => ({ ...d }))
+  const nodes = props.model.nodes.map((d) => ({ ...d }))
 
   // Create a simulation with several forces.
   const simulation = d3
@@ -198,7 +198,7 @@ function resetSvgElement(): void {
     updateSvgSize()
     const container = d3.select(svgContainer.value)
     container.selectAll('svg').remove()
-    if (model.value != null) {
+    if (props.model != null) {
       container.append(buildModelElement)
     }
   }
@@ -235,7 +235,7 @@ function onZoomChanged(/*newValue: number*/): void {
 
 watch(zoom, onZoomChanged)
 
-watch(model, resetSvgElement, { flush: 'post' })
+watch(() => props.model, resetSvgElement, { flush: 'post' })
 
 onMounted(resetSvgElement)
 </script>
@@ -249,10 +249,9 @@ onMounted(resetSvgElement)
       <button @click="onZoomIn">Zoom +</button>
     </div>
     <div class="panel" ref="dependencyGraphContainer">
-      <p class="floating-label">
-        Selected node:
-        {{ !!selectedNode ? selectedNode.id : 'none' }}
-        <span v-if="!!selectedNode" class="annotation">
+      <p class="floating-label" v-if="selectedNode != null">
+        Selected {{ selectedNode.group }}: {{ selectedNode.name || selectedNode.id }}
+        <span class="annotation">
           {{ !selectedNode.condition ? 'always on' : 'conditional' }}
         </span>
       </p>

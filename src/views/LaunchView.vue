@@ -4,10 +4,10 @@
 <script setup lang="ts">
 // Imports ---------------------------------------------------------------------
 
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import type { LaunchFile, LaunchId } from '@/types/launch'
+import type { LaunchAction, LaunchActionId, LaunchFile, LaunchId } from '@/types/launch'
 import { useLaunchFileStore } from '@/stores/launch'
 import DependencyGraph, {
   type GraphLinkDatum,
@@ -27,6 +27,10 @@ const loading = ref<boolean>(false)
 const launchFile = ref<LaunchFile | null>(null)
 const error = ref<string | null>(null)
 
+const selectedAction = ref<LaunchActionId>('')
+const currentDependencies = computed<Set<LaunchActionId>>(getDependencies)
+const dependencyGraph = ref<NodeLinkGraph>(getDependencyGraph())
+
 // Event Handlers --------------------------------------------------------------
 
 // https://router.vuejs.org/guide/advanced/data-fetching.html
@@ -40,6 +44,7 @@ async function fetchData(id: LaunchId | LaunchId[]): Promise<void> {
     id = id[0]
   }
   error.value = launchFile.value = null
+  selectedAction.value = ''
   loading.value = true
 
   try {
@@ -50,21 +55,67 @@ async function fetchData(id: LaunchId | LaunchId[]): Promise<void> {
     error.value = 'unable to fetch data'
   } finally {
     loading.value = false
+    dependencyGraph.value = getDependencyGraph()
   }
 }
+
+function onSelectAction(id: LaunchActionId): void {
+  if (selectedAction.value === id) {
+    selectedAction.value = ''
+  } else {
+    selectedAction.value = id
+  }
+  dependencyGraph.value = getDependencyGraph()
+}
+
+// Helper Functions ------------------------------------------------------------
 
 function getDependencyGraph(): NodeLinkGraph {
   const nodes: GraphNodeDatum[] = []
   const links: GraphLinkDatum[] = []
   if (launchFile.value != null) {
-    for (const action of launchFile.value.actions) {
-      nodes.push({ id: action.id, group: action.type, condition: '' })
+    if (selectedAction.value !== '') {
+      const actions: Record<LaunchActionId, LaunchAction> = {}
+      for (const action of launchFile.value.actions) {
+        actions[action.id] = action
+      }
+      let action = actions[selectedAction.value]
+      nodes.push({ id: action.id, name: action.name, group: action.type, condition: '' })
       for (const target of action.dependencies) {
         links.push({ source: action.id, target, value: 2 })
+      }
+      // transitive dependencies
+      const deps: LaunchActionId[] = action.dependencies.slice()
+      while (deps.length > 0) {
+        action = actions[deps.pop()!]
+        nodes.push({ id: action.id, name: action.name, group: action.type, condition: '' })
+        for (const target of action.dependencies) {
+          links.push({ source: action.id, target, value: 2 })
+          deps.push(target)
+        }
+      }
+    } else {
+      for (const action of launchFile.value.actions) {
+        nodes.push({ id: action.id, name: action.name, group: action.type, condition: '' })
+        for (const target of action.dependencies) {
+          links.push({ source: action.id, target, value: 2 })
+        }
       }
     }
   }
   return { nodes, links }
+}
+
+function getDependencies(): Set<LaunchActionId> {
+  const id = selectedAction.value
+  if (id !== '' && launchFile.value != null) {
+    for (const action of launchFile.value.actions) {
+      if (action.id === id) {
+        return new Set(action.dependencies)
+      }
+    }
+  }
+  return new Set([])
 }
 </script>
 
@@ -81,13 +132,19 @@ function getDependencyGraph(): NodeLinkGraph {
         {{ launchFile.name }}
       </h4>
 
-      <LaunchActionList v-if="launchFile.actions.length > 0" :actions="launchFile.actions" />
+      <LaunchActionList
+        v-if="launchFile.actions.length > 0"
+        :actions="launchFile.actions"
+        :selected-action="selectedAction"
+        :current-dependencies="currentDependencies"
+        @select="onSelectAction"
+      />
       <p v-else>There are no launch actions.</p>
     </div>
 
     <div class="right-side">
       <h3>DEPENDENCY GRAPH</h3>
-      <DependencyGraph :data="getDependencyGraph()" />
+      <DependencyGraph :model="dependencyGraph" />
     </div>
   </div>
 </template>

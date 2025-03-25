@@ -4,36 +4,24 @@
 <script setup lang="ts">
 // Imports ---------------------------------------------------------------------
 
-import { computed, ref } from 'vue'
-
 import type { LaunchAction, LaunchActionId } from '@/types/launch'
 
 // Constants -------------------------------------------------------------------
 
-const props = defineProps<{ actions: LaunchAction[] }>()
+defineProps<{
+  actions: LaunchAction[]
+  selectedAction: LaunchActionId
+  currentDependencies: Set<LaunchActionId>
+}>()
 
-// Component State -------------------------------------------------------------
-
-const selectedAction = ref<LaunchActionId>('')
-const currentDependencies = computed<Set<LaunchActionId>>(getDependencies)
+const emit = defineEmits<{
+  (e: 'select', id: LaunchActionId): void
+}>()
 
 // Event Handlers --------------------------------------------------------------
-// Helper Functions ------------------------------------------------------------
-
-function getDependencies(): Set<LaunchActionId> {
-  const id = selectedAction.value
-  if (id !== '') {
-    for (const action of props.actions) {
-      if (action.id === id) {
-        return new Set(action.dependencies)
-      }
-    }
-  }
-  return new Set([])
-}
 
 function onSelectAction(action: LaunchAction): void {
-  selectedAction.value = action.id
+  emit('select', action.id)
 }
 </script>
 
@@ -50,6 +38,7 @@ function onSelectAction(action: LaunchAction): void {
     >
       <span class="tag">{{ action.type }}</span>
       {{ action.name }}
+      <span v-if="currentDependencies.has(action.id)">(dep)</span>
     </li>
   </ul>
 </template>
