@@ -80,7 +80,13 @@ function getDependencyGraph(): NodeLinkGraph {
         actions[action.id] = action
       }
       let action = actions[selectedAction.value]
-      nodes.push({ id: action.id, name: action.name, group: action.type, condition: '' })
+      nodes.push({
+        id: action.id,
+        name: action.name,
+        group: action.type,
+        focus: true,
+        condition: '',
+      })
       for (const target of action.dependencies) {
         links.push({ source: action.id, target, value: 2 })
       }

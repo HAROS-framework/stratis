@@ -4,6 +4,7 @@
 <script setup lang="ts">
 // Imports ---------------------------------------------------------------------
 
+import { LaunchActionType } from '@/types/launch'
 import * as d3 from 'd3'
 import { type D3DragEvent, type SimulationLinkDatum, type SimulationNodeDatum } from 'd3'
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
@@ -16,6 +17,7 @@ export interface GraphNodeDatum extends SimulationNodeDatum {
   id: string
   name?: string
   group: string
+  focus?: boolean
   condition: string
 }
 
@@ -56,9 +58,17 @@ function onSelectNode(node: GraphNodeDatum | null): void {
   selectedNode.value = node
 }
 
+function groupColors(group: string): string {
+  if (group === LaunchActionType.ARG) return 'forestgreen'
+  if (group === LaunchActionType.NODE) return 'dodgerblue'
+  if (group === LaunchActionType.INCLUDE) return 'orange'
+  return 'gray'
+}
+
 function buildModelElement(): SVGElement {
   // Specify the color scale.
-  const color = d3.scaleOrdinal(d3.schemeCategory10)
+  // const color = d3.scaleOrdinal(d3.schemeCategory10)
+  const color = groupColors
 
   // The force simulation mutates links and nodes, so create a copy
   // so that re-evaluating this cell produces the same result.
@@ -70,9 +80,13 @@ function buildModelElement(): SVGElement {
     .forceSimulation(nodes)
     .force(
       'link',
-      d3.forceLink<GraphNodeDatum, GraphLinkDatum>(links).id((d) => d.id),
+      d3
+        .forceLink<GraphNodeDatum, GraphLinkDatum>(links)
+        .id((d) => d.id)
+        .distance(50)
+        .strength(1),
     )
-    .force('charge', d3.forceManyBody())
+    .force('charge', d3.forceManyBody().strength(-100))
     .force('x', d3.forceX())
     .force('y', d3.forceY())
 
@@ -104,11 +118,11 @@ function buildModelElement(): SVGElement {
     .selectAll<SVGCircleElement, GraphNodeDatum>('circle')
     .data(nodes)
     .join('circle')
-    .attr('r', 10)
+    .attr('r', (d) => (d.focus ? 20 : 10))
     .attr('stroke-dasharray', (d) => (!d.condition ? '' : '2 1'))
     .attr('fill', (d) => color(d.group))
 
-  node.append('title').text((d) => d.id)
+  node.append('title').text((d) => d.name || d.id)
 
   const drag = d3
     .drag<SVGCircleElement, GraphNodeDatum>()
