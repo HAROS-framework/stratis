@@ -15,10 +15,11 @@ const props = defineProps<{ model: NodeLinkGraph }>()
 
 export interface GraphNodeDatum extends SimulationNodeDatum {
   id: string
-  name?: string
   group: string
-  focus?: boolean
-  condition: string
+  name?: string
+  dark?: boolean
+  condition?: string
+  level?: number
 }
 
 export interface GraphLinkDatum extends SimulationLinkDatum<GraphNodeDatum> {
@@ -59,9 +60,9 @@ function onSelectNode(node: GraphNodeDatum | null): void {
 }
 
 function groupColors(group: string): string {
-  if (group === LaunchActionType.ARG) return 'forestgreen'
+  if (group === LaunchActionType.ARG) return 'limegreen'
   if (group === LaunchActionType.NODE) return 'dodgerblue'
-  if (group === LaunchActionType.INCLUDE) return 'orange'
+  if (group === LaunchActionType.INCLUDE) return 'chocolate'
   return 'gray'
 }
 
@@ -101,7 +102,26 @@ function buildModelElement(): SVGElement {
       svgHeight.value, // height
     ])
 
-  // Add a line for each link, and a circle for each node.
+  // Add arrowheads for each link
+  svg
+    .append('defs')
+    .selectAll('marker')
+    .data(['link-arrowhead'])
+    .enter()
+    .append('marker')
+    .attr('id', 'link-arrowhead')
+    .attr('viewBox', '0 -3 6 6')
+    .attr('refX', 22) // about half of the link distance
+    .attr('refY', 0)
+    .attr('markerWidth', 6)
+    .attr('markerHeight', 6)
+    .attr('orient', 'auto')
+    .append('path')
+    .attr('d', 'M0,-3L6,0L0,3')
+    .style('stroke', '#999')
+    .style('fill', '#999')
+
+  // Add a line for each link
   const link = svg
     .append('g')
     .attr('stroke', '#999')
@@ -110,15 +130,17 @@ function buildModelElement(): SVGElement {
     .data(links)
     .join('line')
     .attr('stroke-width', (d) => Math.sqrt(d.value))
+    .style('marker-end', 'url(#link-arrowhead)')
 
+  // Add a circle for each node
   const node = svg
     .append('g')
-    .attr('stroke', '#fff')
     .attr('stroke-width', 1.5)
     .selectAll<SVGCircleElement, GraphNodeDatum>('circle')
     .data(nodes)
     .join('circle')
-    .attr('r', (d) => (d.focus ? 20 : 10))
+    .attr('r', (d) => (d.level || 0) * 5 + 10)
+    .attr('stroke', (d) => (d.dark ? '#999' : '#fff'))
     .attr('stroke-dasharray', (d) => (!d.condition ? '' : '2 1'))
     .attr('fill', (d) => color(d.group))
 

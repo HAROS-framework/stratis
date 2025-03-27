@@ -10,18 +10,18 @@ import type { LaunchAction, LaunchActionId } from '@/types/launch'
 
 defineProps<{
   actions: LaunchAction[]
-  selectedAction: LaunchActionId
+  selectedAction?: LaunchActionId
   currentDependencies: Set<LaunchActionId>
 }>()
 
 const emit = defineEmits<{
-  (e: 'select', id: LaunchActionId): void
+  (e: 'select', action: LaunchAction): void
 }>()
 
 // Event Handlers --------------------------------------------------------------
 
 function onSelectAction(action: LaunchAction): void {
-  emit('select', action.id)
+  emit('select', action)
 }
 </script>
 
@@ -31,7 +31,7 @@ function onSelectAction(action: LaunchAction): void {
       v-for="action in actions"
       :key="action.id"
       :class="{
-        selected: action.id === selectedAction,
+        selected: selectedAction && action.id === selectedAction,
         dependency: currentDependencies.has(action.id),
       }"
       @click="onSelectAction(action)"

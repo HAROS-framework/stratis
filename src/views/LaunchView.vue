@@ -2,6 +2,9 @@
 <!-- Copyright © 2025 André Santos -->
 
 <script setup lang="ts">
+// Arc diagram might be a better view for this type of information
+// https://observablehq.com/@d3/arc-diagram
+
 // Imports ---------------------------------------------------------------------
 
 import { computed, ref, watch } from 'vue'
@@ -27,7 +30,7 @@ const loading = ref<boolean>(false)
 const launchFile = ref<LaunchFile | null>(null)
 const error = ref<string | null>(null)
 
-const selectedAction = ref<LaunchActionId>('')
+const selectedAction = ref<LaunchAction | null>(null)
 const currentDependencies = computed<Set<LaunchActionId>>(getDependencies)
 const dependencyGraph = ref<NodeLinkGraph>(getDependencyGraph())
 
@@ -44,7 +47,7 @@ async function fetchData(id: LaunchId | LaunchId[]): Promise<void> {
     id = id[0]
   }
   error.value = launchFile.value = null
-  selectedAction.value = ''
+  selectedAction.value = null
   loading.value = true
 
   try {
@@ -59,11 +62,11 @@ async function fetchData(id: LaunchId | LaunchId[]): Promise<void> {
   }
 }
 
-function onSelectAction(id: LaunchActionId): void {
-  if (selectedAction.value === id) {
-    selectedAction.value = ''
+function onSelectAction(action: LaunchAction): void {
+  if (selectedAction.value != null && selectedAction.value.id === action.id) {
+    selectedAction.value = null
   } else {
-    selectedAction.value = id
+    selectedAction.value = action
   }
   dependencyGraph.value = getDependencyGraph()
 }
@@ -74,17 +77,18 @@ function getDependencyGraph(): NodeLinkGraph {
   const nodes: GraphNodeDatum[] = []
   const links: GraphLinkDatum[] = []
   if (launchFile.value != null) {
-    if (selectedAction.value !== '') {
+    if (selectedAction.value != null) {
       const actions: Record<LaunchActionId, LaunchAction> = {}
       for (const action of launchFile.value.actions) {
         actions[action.id] = action
       }
-      let action = actions[selectedAction.value]
+      let action = selectedAction.value
       nodes.push({
         id: action.id,
         name: action.name,
         group: action.type,
-        focus: true,
+        level: 2,
+        dark: action.dependencies.length > 0,
         condition: '',
       })
       for (const target of action.dependencies) {
@@ -94,7 +98,13 @@ function getDependencyGraph(): NodeLinkGraph {
       const deps: LaunchActionId[] = action.dependencies.slice()
       while (deps.length > 0) {
         action = actions[deps.pop()!]
-        nodes.push({ id: action.id, name: action.name, group: action.type, condition: '' })
+        nodes.push({
+          id: action.id,
+          name: action.name,
+          group: action.type,
+          dark: action.dependencies.length > 0,
+          condition: '',
+        })
         for (const target of action.dependencies) {
           links.push({ source: action.id, target, value: 2 })
           deps.push(target)
@@ -102,7 +112,13 @@ function getDependencyGraph(): NodeLinkGraph {
       }
     } else {
       for (const action of launchFile.value.actions) {
-        nodes.push({ id: action.id, name: action.name, group: action.type, condition: '' })
+        nodes.push({
+          id: action.id,
+          name: action.name,
+          group: action.type,
+          dark: action.dependencies.length > 0,
+          condition: '',
+        })
         for (const target of action.dependencies) {
           links.push({ source: action.id, target, value: 2 })
         }
@@ -113,8 +129,8 @@ function getDependencyGraph(): NodeLinkGraph {
 }
 
 function getDependencies(): Set<LaunchActionId> {
-  const id = selectedAction.value
-  if (id !== '' && launchFile.value != null) {
+  if (launchFile.value != null && selectedAction.value != null) {
+    const id = selectedAction.value.id
     for (const action of launchFile.value.actions) {
       if (action.id === id) {
         return new Set(action.dependencies)
@@ -141,11 +157,25 @@ function getDependencies(): Set<LaunchActionId> {
       <LaunchActionList
         v-if="launchFile.actions.length > 0"
         :actions="launchFile.actions"
-        :selected-action="selectedAction"
+        :selected-action="selectedAction?.id"
         :current-dependencies="currentDependencies"
         @select="onSelectAction"
       />
       <p v-else>There are no launch actions.</p>
+
+      <div v-if="selectedAction != null" class="panel details">
+        <h4>
+          <code class="tag">{{ selectedAction.type }}</code>
+          {{ selectedAction.name }}
+        </h4>
+        <p v-if="selectedAction.dependencies.length > 0">
+          Depends on:
+          <template v-for="(dep, i) in selectedAction.dependencies" :key="dep">
+            <template v-if="i > 0">, </template>
+            <code>{{ dep }}</code>
+          </template>
+        </p>
+      </div>
     </div>
 
     <div class="right-side">
@@ -176,6 +206,12 @@ function getDependencies(): Set<LaunchActionId> {
   width: 1em;
   height: 1em;
   vertical-align: middle;
+}
+
+.launch-view > .left-side > .details {
+  flex: 0 0 auto;
+  padding: 0 0.5rem;
+  max-height: 4rem;
 }
 
 .launch-view > .right-side {
