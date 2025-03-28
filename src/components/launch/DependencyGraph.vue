@@ -60,9 +60,9 @@ function onSelectNode(node: GraphNodeDatum | null): void {
 }
 
 function groupColors(group: string): string {
-  if (group === LaunchActionType.ARG) return 'limegreen'
-  if (group === LaunchActionType.NODE) return 'dodgerblue'
-  if (group === LaunchActionType.INCLUDE) return 'chocolate'
+  if (group === LaunchActionType.ARG) return '#f6f294'
+  if (group === LaunchActionType.NODE) return '#00bd7e'
+  if (group === LaunchActionType.INCLUDE) return '#7fafe3'
   return 'gray'
 }
 
@@ -70,6 +70,9 @@ function buildModelElement(): SVGElement {
   // Specify the color scale.
   // const color = d3.scaleOrdinal(d3.schemeCategory10)
   const color = groupColors
+
+  const nodeStrokeColor = (d: GraphNodeDatum): string => color(d.group)
+  const nodeFillColor = (d: GraphNodeDatum): string => (d.dark ? 'var(--color-background)' : '#666')
 
   // The force simulation mutates links and nodes, so create a copy
   // so that re-evaluating this cell produces the same result.
@@ -118,13 +121,14 @@ function buildModelElement(): SVGElement {
     .attr('orient', 'auto')
     .append('path')
     .attr('d', 'M0,-3L6,0L0,3')
-    .style('stroke', '#999')
-    .style('fill', '#999')
+    .style('stroke', 'var(--color-text)')
+    .style('stroke-opacity', 0.6)
+    .style('fill', 'var(--color-text)')
 
   // Add a line for each link
   const link = svg
     .append('g')
-    .attr('stroke', '#999')
+    .attr('stroke', 'var(--color-text)')
     .attr('stroke-opacity', 0.6)
     .selectAll('line')
     .data(links)
@@ -135,14 +139,14 @@ function buildModelElement(): SVGElement {
   // Add a circle for each node
   const node = svg
     .append('g')
-    .attr('stroke-width', 1.5)
+    .attr('stroke-width', 2)
     .selectAll<SVGCircleElement, GraphNodeDatum>('circle')
     .data(nodes)
     .join('circle')
     .attr('r', (d) => (d.level || 0) * 5 + 10)
-    .attr('stroke', (d) => (d.dark ? '#999' : '#fff'))
+    .attr('stroke', nodeStrokeColor) // (d.dark ? '#333' : color(d.group))
     .attr('stroke-dasharray', (d) => (!d.condition ? '' : '2 1'))
-    .attr('fill', (d) => color(d.group))
+    .attr('fill', nodeFillColor)
 
   node.append('title').text((d) => d.name || d.id)
 
@@ -163,12 +167,10 @@ function buildModelElement(): SVGElement {
       if (k === i) {
         return
       }
-      d3.select<SVGCircleElement, GraphNodeDatum>(node.nodes()[k]).attr('fill', (d) =>
-        color(d.group),
-      )
+      d3.select<SVGCircleElement, GraphNodeDatum>(node.nodes()[k]).attr('fill', nodeFillColor(prev))
     }
     onSelectNode(datum)
-    d3.select(el).attr('fill', '#c9c9c9')
+    d3.select(el).attr('fill', nodeStrokeColor(datum))
   }
 
   node.on('click', (e /*, d*/) => {
@@ -185,9 +187,7 @@ function buildModelElement(): SVGElement {
     const prev = selectedNode.value
     if (prev != null) {
       const k = prev.index!
-      d3.select<SVGCircleElement, GraphNodeDatum>(node.nodes()[k]).attr('fill', (d) =>
-        color(d.group),
-      )
+      d3.select<SVGCircleElement, GraphNodeDatum>(node.nodes()[k]).attr('fill', nodeFillColor(prev))
       onSelectNode(null)
     }
   })

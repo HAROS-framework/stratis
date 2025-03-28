@@ -23,11 +23,25 @@
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
+  /* #00bd7e */
   --vt-c-text-green: hsla(160, 100%, 37%, 1);
   --vt-c-green-shadow: hsla(160, 100%, 37%, 0.2);
 
-  --vt-c-text-orange: hsla(50, 88%, 55%, 1);
-  --vt-c-orange-shadow: hsla(50, 88%, 55%, 0.35);
+  /* #ffd79a */
+  --vt-c-text-orange: hsla(36, 100%, 80%, 1);
+  --vt-c-orange-shadow: hsla(36, 100%, 80%, 0.2);
+
+  /* #f6f294 */
+  --vt-c-text-yellow: hsla(58, 84%, 77%, 1);
+  --vt-c-yellow-shadow: hsla(58, 84%, 77%, 0.2);
+
+  /* #dcadd6 */
+  --vt-c-text-violet: hsla(308, 40%, 77%, 1);
+  --vt-c-violet-shadow: hsla(308, 40%, 77%, 0.2);
+
+  /* #7fafe3 */
+  --vt-c-text-blue: hsla(211, 64%, 69%, 1);
+  --vt-c-blue-shadow: hsla(211, 64%, 69%, 0.2);
 }
 
 /* semantic color variables for this project */
@@ -47,6 +61,15 @@
 
   --color-orange: var(--vt-c-text-orange);
   --color-orange-hover: var(--vt-c-orange-shadow);
+
+  --color-yellow: var(--vt-c-text-yellow);
+  --color-yellow-hover: var(--vt-c-yellow-shadow);
+
+  --color-violet: var(--vt-c-text-violet);
+  --color-violet-hover: var(--vt-c-violet-shadow);
+
+  --color-blue: var(--vt-c-text-blue);
+  --color-blue-hover: var(--vt-c-blue-shadow);
 
   --section-gap: 160px;
 }

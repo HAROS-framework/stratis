@@ -36,7 +36,7 @@ function onSelectAction(action: LaunchAction): void {
       }"
       @click="onSelectAction(action)"
     >
-      <span class="tag">{{ action.type }}</span>
+      <span class="tag" :class="`type-${action.type}`">{{ action.type.toUpperCase() }}</span>
       {{ action.name }}
       <span v-if="currentDependencies.has(action.id)">(dep)</span>
     </li>
@@ -54,10 +54,9 @@ function onSelectAction(action: LaunchAction): void {
   font-family: monospace;
   overflow: auto;
   white-space: nowrap;
-  line-height: 1.25;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
   margin: 0.5rem 0 0.5rem 0.5rem;
 }
 
@@ -83,8 +82,23 @@ function onSelectAction(action: LaunchAction): void {
 .launch-action-list > li > .tag {
   border-radius: 0.25em;
   border: 1px solid var(--color-text);
-  font-variant-caps: all-small-caps;
-  font-size: 1rem;
+  /* font-variant-caps: all-petite-caps;
+  font-size: 1rem;*/
   padding: 0 0.25em;
+}
+
+.launch-action-list > li > .tag.type-arg {
+  border: 1px solid var(--color-yellow);
+  color: var(--color-yellow);
+}
+
+.launch-action-list > li > .tag.type-node {
+  border: 1px solid var(--color-green);
+  color: var(--color-green);
+}
+
+.launch-action-list > li > .tag.type-include {
+  border: 1px solid var(--color-blue);
+  color: var(--color-blue);
 }
 </style>
