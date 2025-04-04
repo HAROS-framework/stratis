@@ -13,6 +13,11 @@ import { onMounted, ref, useTemplateRef, watch } from 'vue'
 
 const props = defineProps<{ model: NodeLinkGraph }>()
 
+export interface NodeLinkGraph {
+  nodes: Record<string, GraphNodeDatum>
+  links: GraphLinkDatum[]
+}
+
 export interface GraphNodeDatum extends SimulationNodeDatum {
   id: string
   group: string
@@ -20,17 +25,13 @@ export interface GraphNodeDatum extends SimulationNodeDatum {
   dark?: boolean
   condition?: string
   level?: number
+  parent?: string
 }
 
 export interface GraphLinkDatum extends SimulationLinkDatum<GraphNodeDatum> {
   source: string | GraphNodeDatum
   target: string | GraphNodeDatum
-  value: number
-}
-
-export interface NodeLinkGraph {
-  nodes: GraphNodeDatum[]
-  links: GraphLinkDatum[]
+  isDataLink: boolean
 }
 
 // Component State -------------------------------------------------------------
@@ -40,6 +41,7 @@ const selectedNode = ref<GraphNodeDatum | null>(null)
 const zoom = ref<number>(1.0)
 const svgWidth = ref<number>(320)
 const svgHeight = ref<number>(100)
+const showControlLinks = ref<boolean>(true)
 
 // Component Methods -----------------------------------------------------------
 
@@ -60,10 +62,18 @@ function onSelectNode(node: GraphNodeDatum | null): void {
 }
 
 function groupColors(group: string): string {
-  if (group === LaunchActionType.ARG) return '#f6f294'
-  if (group === LaunchActionType.NODE) return '#00bd7e'
-  if (group === LaunchActionType.INCLUDE) return '#7fafe3'
+  if (group === LaunchActionType.ARG) return 'var(--color-green)'
+  if (group === LaunchActionType.NODE) return 'var(--color-blue)'
+  if (group === LaunchActionType.INCLUDE) return 'var(--color-yellow)'
   return 'gray'
+}
+
+function isAnyLink(): boolean {
+  return true
+}
+
+function isDataLink(d: GraphLinkDatum): boolean {
+  return d.isDataLink
 }
 
 function buildModelElement(): SVGElement {
@@ -71,13 +81,12 @@ function buildModelElement(): SVGElement {
   // const color = d3.scaleOrdinal(d3.schemeCategory10)
   const color = groupColors
 
-  const nodeStrokeColor = (d: GraphNodeDatum): string => color(d.group)
-  const nodeFillColor = (d: GraphNodeDatum): string => (d.dark ? 'var(--color-background)' : '#666')
-
   // The force simulation mutates links and nodes, so create a copy
   // so that re-evaluating this cell produces the same result.
-  const links = props.model.links.map((d) => ({ ...d }))
-  const nodes = props.model.nodes.map((d) => ({ ...d }))
+  const links = props.model.links
+    .filter(showControlLinks.value ? isAnyLink : isDataLink)
+    .map((d) => ({ ...d }))
+  const nodes = Object.values(props.model.nodes).map((d) => ({ ...d }))
 
   // Create a simulation with several forces.
   const simulation = d3
@@ -114,7 +123,7 @@ function buildModelElement(): SVGElement {
     .append('marker')
     .attr('id', 'link-arrowhead')
     .attr('viewBox', '0 -3 6 6')
-    .attr('refX', 22) // about half of the link distance
+    .attr('refX', 25) // about half of the link distance
     .attr('refY', 0)
     .attr('markerWidth', 6)
     .attr('markerHeight', 6)
@@ -125,16 +134,25 @@ function buildModelElement(): SVGElement {
     .style('stroke-opacity', 0.6)
     .style('fill', 'var(--color-text)')
 
+  const linkStrokeDasharray = (d: GraphLinkDatum): string => (d.isDataLink ? '' : '3 1')
+  const linkMarkerEnd = (d: GraphLinkDatum): string => (d.isDataLink ? 'url(#link-arrowhead)' : '')
+
   // Add a line for each link
   const link = svg
     .append('g')
     .attr('stroke', 'var(--color-text)')
-    .attr('stroke-opacity', 0.6)
+    // .attr('stroke-opacity', 0.6)
     .selectAll('line')
     .data(links)
     .join('line')
-    .attr('stroke-width', (d) => Math.sqrt(d.value))
-    .style('marker-end', 'url(#link-arrowhead)')
+    .attr('stroke-width', 1)
+    .attr('stroke-dasharray', linkStrokeDasharray)
+    .style('marker-end', linkMarkerEnd)
+
+  const nodeStrokeColor = (d: GraphNodeDatum): string => color(d.group)
+  const nodeFillColor = (d: GraphNodeDatum): string => (d.dark ? 'var(--color-background)' : '#666')
+  const nodeStrokeDasharray = (d: GraphNodeDatum): string => (!d.condition ? '' : '2 1')
+  const nodeRadius = (d: GraphNodeDatum): number => (d.level || 0) * 5 + 10
 
   // Add a circle for each node
   const node = svg
@@ -143,9 +161,9 @@ function buildModelElement(): SVGElement {
     .selectAll<SVGCircleElement, GraphNodeDatum>('circle')
     .data(nodes)
     .join('circle')
-    .attr('r', (d) => (d.level || 0) * 5 + 10)
+    .attr('r', nodeRadius)
     .attr('stroke', nodeStrokeColor) // (d.dark ? '#333' : color(d.group))
-    .attr('stroke-dasharray', (d) => (!d.condition ? '' : '2 1'))
+    .attr('stroke-dasharray', nodeStrokeDasharray)
     .attr('fill', nodeFillColor)
 
   node.append('title').text((d) => d.name || d.id)
@@ -269,6 +287,11 @@ function onZoomChanged(/*newValue: number*/): void {
   }
 }
 
+function onShowControlLinks() {
+  showControlLinks.value = !showControlLinks.value
+  resetSvgElement()
+}
+
 watch(zoom, onZoomChanged)
 
 watch(() => props.model, resetSvgElement, { flush: 'post' })
@@ -283,6 +306,10 @@ onMounted(resetSvgElement)
     <div class="toolbar">
       <button @click="onZoomOut">Zoom -</button>
       <button @click="onZoomIn">Zoom +</button>
+      <label>
+        <input type="checkbox" :checked="showControlLinks" @click="onShowControlLinks" />
+        Control Links
+      </label>
     </div>
     <div class="panel" ref="dependencyGraphContainer">
       <p class="floating-label" v-if="selectedNode != null">

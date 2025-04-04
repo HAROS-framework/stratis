@@ -27,3 +27,8 @@ export interface LaunchAction {
   name: string
   dependencies: LaunchActionId[]
 }
+
+export interface LaunchIncludeAction extends LaunchAction {
+  type: LaunchActionType.INCLUDE
+  actions: LaunchAction[]
+}

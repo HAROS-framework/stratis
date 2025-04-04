@@ -10,7 +10,14 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import type { LaunchAction, LaunchActionId, LaunchFile, LaunchId } from '@/types/launch'
+import {
+  LaunchActionType,
+  type LaunchAction,
+  type LaunchActionId,
+  type LaunchFile,
+  type LaunchId,
+  type LaunchIncludeAction,
+} from '@/types/launch'
 import { useLaunchFileStore } from '@/stores/launch'
 import DependencyGraph, {
   type GraphLinkDatum,
@@ -30,9 +37,12 @@ const loading = ref<boolean>(false)
 const launchFile = ref<LaunchFile | null>(null)
 const error = ref<string | null>(null)
 
+const actionMap = ref<Record<LaunchActionId, LaunchAction>>({})
 const selectedAction = ref<LaunchAction | null>(null)
 const currentDependencies = computed<Set<LaunchActionId>>(getDependencies)
+
 const dependencyGraph = ref<NodeLinkGraph>(getDependencyGraph())
+const filteredGraph = computed<NodeLinkGraph>(filterDependencyGraph)
 
 // Event Handlers --------------------------------------------------------------
 
@@ -58,69 +68,106 @@ async function fetchData(id: LaunchId | LaunchId[]): Promise<void> {
     error.value = 'unable to fetch data'
   } finally {
     loading.value = false
+    actionMap.value = getLaunchActionMap()
     dependencyGraph.value = getDependencyGraph()
   }
 }
 
 function onSelectAction(action: LaunchAction): void {
+  for (const node of Object.values(dependencyGraph.value.nodes)) {
+    node.level = 0
+  }
   if (selectedAction.value != null && selectedAction.value.id === action.id) {
     selectedAction.value = null
   } else {
     selectedAction.value = action
   }
-  dependencyGraph.value = getDependencyGraph()
 }
 
 // Helper Functions ------------------------------------------------------------
 
+function getLaunchActionMap(): Record<LaunchActionId, LaunchAction> {
+  const map: Record<LaunchActionId, LaunchAction> = {}
+  if (launchFile.value != null) {
+    const stack: LaunchAction[] = launchFile.value.actions.slice()
+    while (stack.length > 0) {
+      const action: LaunchAction = stack.pop()!
+      map[action.id] = action
+      if (action.type === LaunchActionType.INCLUDE) {
+        for (const subaction of (action as LaunchIncludeAction).actions) {
+          stack.push(subaction)
+        }
+      }
+    }
+  }
+  return map
+}
+
+function filterDependencyGraph(): NodeLinkGraph {
+  if (selectedAction.value == null) {
+    return dependencyGraph.value
+  }
+
+  // transitive dependencies (traverse down)
+  const graph = dependencyGraph.value
+  const nodes: Record<LaunchActionId, GraphNodeDatum> = {}
+  const deps: LaunchActionId[] = [selectedAction.value.id]
+  while (deps.length > 0) {
+    const action = actionMap.value[deps.pop()!]
+    nodes[action.id] = graph.nodes[action.id]
+    for (const dep of action.dependencies) {
+      if (nodes[dep] == null) {
+        deps.push(dep)
+      }
+    }
+  }
+
+  // transitive dependencies (traverse up)
+  deps.push(selectedAction.value.id)
+  while (deps.length > 0) {
+    const action = actionMap.value[deps.pop()!]
+    const node = graph.nodes[action.id]
+    nodes[action.id] = node
+    if (node.parent != null) {
+      deps.push(node.parent)
+    }
+  }
+
+  const links: GraphLinkDatum[] = []
+  nodes[selectedAction.value.id].level = 2
+  for (const link of dependencyGraph.value.links) {
+    if (nodes[link.source as string] != null && nodes[link.target as string] != null) {
+      links.push(link)
+    }
+  }
+  return { nodes, links }
+}
+
 function getDependencyGraph(): NodeLinkGraph {
-  const nodes: GraphNodeDatum[] = []
+  const nodes: Record<LaunchActionId, GraphNodeDatum> = {}
   const links: GraphLinkDatum[] = []
   if (launchFile.value != null) {
-    if (selectedAction.value != null) {
-      const actions: Record<LaunchActionId, LaunchAction> = {}
-      for (const action of launchFile.value.actions) {
-        actions[action.id] = action
-      }
-      let action = selectedAction.value
-      nodes.push({
+    const stack: LaunchAction[] = launchFile.value.actions.slice()
+    const parents: LaunchActionId[] = []
+    while (stack.length > 0) {
+      const action: LaunchAction = stack.pop()!
+      const parent = parents.pop()
+      nodes[action.id] = {
         id: action.id,
         name: action.name,
         group: action.type,
-        level: 2,
         dark: action.dependencies.length > 0,
         condition: '',
-      })
+        parent,
+      }
       for (const target of action.dependencies) {
-        links.push({ source: action.id, target, value: 2 })
+        links.push({ source: action.id, target, isDataLink: true })
       }
-      // transitive dependencies
-      const deps: LaunchActionId[] = action.dependencies.slice()
-      while (deps.length > 0) {
-        action = actions[deps.pop()!]
-        nodes.push({
-          id: action.id,
-          name: action.name,
-          group: action.type,
-          dark: action.dependencies.length > 0,
-          condition: '',
-        })
-        for (const target of action.dependencies) {
-          links.push({ source: action.id, target, value: 2 })
-          deps.push(target)
-        }
-      }
-    } else {
-      for (const action of launchFile.value.actions) {
-        nodes.push({
-          id: action.id,
-          name: action.name,
-          group: action.type,
-          dark: action.dependencies.length > 0,
-          condition: '',
-        })
-        for (const target of action.dependencies) {
-          links.push({ source: action.id, target, value: 2 })
+      if (action.type === LaunchActionType.INCLUDE) {
+        for (const subaction of (action as LaunchIncludeAction).actions) {
+          stack.push(subaction)
+          parents.push(action.id)
+          links.push({ source: subaction.id, target: action.id, isDataLink: false })
         }
       }
     }
@@ -129,15 +176,10 @@ function getDependencyGraph(): NodeLinkGraph {
 }
 
 function getDependencies(): Set<LaunchActionId> {
-  if (launchFile.value != null && selectedAction.value != null) {
-    const id = selectedAction.value.id
-    for (const action of launchFile.value.actions) {
-      if (action.id === id) {
-        return new Set(action.dependencies)
-      }
-    }
+  if (launchFile.value == null || selectedAction.value == null) {
+    return new Set()
   }
-  return new Set([])
+  return new Set(selectedAction.value.dependencies)
 }
 </script>
 
@@ -162,25 +204,11 @@ function getDependencies(): Set<LaunchActionId> {
         @select="onSelectAction"
       />
       <p v-else>There are no launch actions.</p>
-
-      <div v-if="selectedAction != null" class="panel details">
-        <h4>
-          <code class="tag">{{ selectedAction.type }}</code>
-          {{ selectedAction.name }}
-        </h4>
-        <p v-if="selectedAction.dependencies.length > 0">
-          Depends on:
-          <template v-for="(dep, i) in selectedAction.dependencies" :key="dep">
-            <template v-if="i > 0">, </template>
-            <code>{{ dep }}</code>
-          </template>
-        </p>
-      </div>
     </div>
 
     <div class="right-side">
       <h3>DEPENDENCY GRAPH</h3>
-      <DependencyGraph :model="dependencyGraph" />
+      <DependencyGraph :model="filteredGraph" />
     </div>
   </div>
 </template>
